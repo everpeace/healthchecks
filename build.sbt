@@ -1,42 +1,19 @@
-import Dependencies._
-import sbt.addCompilerPlugin
-
-lazy val root = (project in file("."))
-  .aggregate(core, k8sProbes)
+lazy val root = project
+  .copy(id = "root")
+  .in(file("."))
   .settings(
-    inThisBuild(
-      List(
-        organization := "com.github.everpeace",
-        version := "0.1.0-SNAPSHOT",
-        scalaVersion := "2.11.11",
-        crossScalaVersions := Seq("2.11.11", "2.12.4"),
-        scalafmtOnCompile := true,
-        scalafmtTestOnCompile := true,
-        addCompilerPlugin(
-          "org.scalamacros" % "paradise" % Versions.paradiseVersion cross CrossVersion.full)
-      )),
-    name := "healthchecks-root",
     publishLocal := {},
     publish := {}
   )
+  .aggregate(core, k8sProbes)
 
-lazy val core = (project in file("core")).settings(
-  name := "healthchecks-core",
-  libraryDependencies ++= Seq(
-    cats,
-    akka.http,
-    akka.httpCirce,
-    circe.core,
-    circe.generic,
-    circe.parser
-  ) ++ Seq(
-    akka.httpTestKit % "test",
-    scalaTest        % "test"
-  )
-)
+lazy val core = project
+  .copy(id = "core")
+  .enablePlugins(AutomateHeaderPlugin)
+  .in(file("core"))
 
-lazy val k8sProbes = (project in file("k8s-probes"))
-  .settings(
-    name := "healthchecks-k8s-probes"
-  )
+lazy val k8sProbes = project
+  .copy(id = "k8s-probes")
+  .in(file("k8s-probes"))
+  .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(core % "test->test;compile->compile")
