@@ -83,10 +83,10 @@ It supports to setup kubernetes liveness/readiness probe really easily like this
   import com.github.everpeace.healthchecks._
   import com.github.everpeace.healthchecks.k8s._
   
-  // by default, listening localhost:9999
+  // by default, listening localhost:8086
   // and probe paths are
-  //   GET /k8s/liveness_probe
-  //   GET /k8s/readiness_probe
+  //   GET /live
+  //   GET /ready
   val probeBinding = bindAndHandleProbes(
     readinessProbe(healthCheck(name = "readiness_check")(healthy)),
     livenessProbe(asyncHealthCheck(name = "liveness_check")(Future(healthy)))
@@ -99,14 +99,14 @@ Then you can set kubernetes liveness/readiness probe in the kubernetes manifest 
 ...
   livenessProbe:
     httpGet:
-      path: /k8s/liveness_probe
-      port: 9999
+      path: /live
+      port: 8086
       initialDelaySeconds: 3
       periodSeconds: 3
   readinessProbe:
     httpGet:
-      path: /k8s/readiness_probe
-      port: 9999
+      path: /ready
+      port: 8086
       initialDelaySeconds: 3
       periodSeconds: 3
 ...

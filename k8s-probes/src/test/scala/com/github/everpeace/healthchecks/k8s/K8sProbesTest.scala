@@ -48,9 +48,9 @@ class K8sProbesTest extends FreeSpec with Matchers {
       )
 
       def requestToLivenessProbe =
-        Http().singleRequest(HttpRequest(uri = "http://localhost:9999/k8s/liveness_probe"))
+        Http().singleRequest(HttpRequest(uri = "http://localhost:8086/live"))
       def requestToReadinessProbe =
-        Http().singleRequest(HttpRequest(uri = "http://localhost:9999/k8s/readiness_probe"))
+        Http().singleRequest(HttpRequest(uri = "http://localhost:8086/ready"))
 
       val livenessResponse = Await.result(requestToLivenessProbe, 10 seconds)
       val redinessResponse = Await.result(requestToReadinessProbe, 10 seconds)
