@@ -19,6 +19,13 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/*
+ * The original source code were written by https://github.com/timeoutdigital.
+ * Original source code are distributed with MIT License.
+ * Please see: https://github.com/timeoutdigital/akka-http-healthchecks
+ * The codes are modified from original one by Shingo Omura.
+ */
+
 package com.github.everpeace
 
 import cats.data.ValidatedNel

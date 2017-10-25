@@ -19,11 +19,19 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/*
+ * The original source code were written by https://github.com/timeoutdigital.
+ * Original source code are distributed with MIT License.
+ * Please see: https://github.com/timeoutdigital/akka-http-healthchecks
+ * The codes are modified from original one by Shingo Omura.
+ */
+
 package com.github.everpeace.healthchecks.route
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.PathMatchers
+import akka.http.scaladsl.server.{PathMatchers, Route}
+import akka.http.scaladsl.server.directives.PathDirectives
 import cats.data.Validated.{Invalid, Valid}
 import com.github.everpeace.healthchecks.{HealthCheck, HealthCheckResult}
 import de.heikoseeberger.akkahttpcirce.CirceSupport._
@@ -42,9 +50,9 @@ object HealthCheckRoutes extends DecorateAsScala {
       messages: List[String])
   @JsonCodec case class ResponseJson(status: String, check_results: List[HealthCheckResultJson])
 
-  def status(s: Boolean)     = if (s) "healthy" else "unhealthy"
-  def statusCode(s: Boolean) = if (s) OK else InternalServerError
-  def toResultJson(check: HealthCheck, result: HealthCheckResult) =
+  private def status(s: Boolean)     = if (s) "healthy" else "unhealthy"
+  private def statusCode(s: Boolean) = if (s) OK else InternalServerError
+  private def toResultJson(check: HealthCheck, result: HealthCheckResult) =
     HealthCheckResultJson(
       check.name,
       check.severity.toString,
@@ -56,19 +64,25 @@ object HealthCheckRoutes extends DecorateAsScala {
     )
 
   def health(
-      checks: List[HealthCheck],
-      pathString: String = "health"
+      checks: HealthCheck*
     )(implicit
       ec: ExecutionContext
-    ) = {
-    require(checks.nonEmpty, "checks must not empty.")
+    ): Route = health("health", checks.toList)
+
+  def health(
+      path: String,
+      checks: List[HealthCheck]
+    )(implicit
+      ec: ExecutionContext
+    ): Route = {
+    require(checks.toList.nonEmpty, "checks must not empty.")
     require(
       checks.toList.map(_.name).toSet.size == checks.toList.length,
       s"HealthCheck name should be unique (given HealthCheck names = [${checks.toList.map(_.name).mkString(",")}])."
     )
     val rootSlashRemoved =
-      if (pathString.startsWith("/")) pathString.substring(1) else pathString
-    path(PathMatchers.separateOnSlashes(rootSlashRemoved)) {
+      if (path.startsWith("/")) path.substring(1) else path
+    PathDirectives.path(PathMatchers.separateOnSlashes(rootSlashRemoved)) {
       get {
         complete {
           Future
