@@ -1,6 +1,6 @@
 # healthchecks
 [![Build Status](https://travis-ci.org/everpeace/healthchecks.svg?branch=master)](https://travis-ci.org/everpeace/healthchecks)
-[![Bintray](https://img.shields.io/bintray/v/everpeace/maven/healthchecks.svg)](https://bintray.com/everpeace/maven/healthchecks/_latestVersion)
+[![Download](https://api.bintray.com/packages/everpeace/maven/healthchecks/images/download.svg)](https://bintray.com/everpeace/maven/healthchecks/_latestVersion)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 tiny healthcheck library for akka-http with [Kubernetes liveness/readiness probe][k8sprobe] support.
