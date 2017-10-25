@@ -18,6 +18,9 @@ libraryDependencies += "com.github.everpeace" %% "healthchecks-k8s-probes" % <ve
 ```
 
 ## Getting Started
+- [Simple healthcheck endpoint](#simple-healthcheck-endpoint)
+- [Kubernetes liveness/readiness probe endpoints](#kubernetes-livenessreadiness-probe-endpoints)
+
 ### Simple healthcheck endpoint
 All you need to give is just health check function returning cats `ValidationNel[String, Unit]`.
 
