@@ -49,9 +49,9 @@ object HealthCheckRoutes extends DecorateAsScala {
       messages: List[String])
   @JsonCodec case class ResponseJson(status: String, check_results: List[HealthCheckResultJson])
 
-  def status(s: Boolean)     = if (s) "healthy" else "unhealthy"
-  def statusCode(s: Boolean) = if (s) OK else InternalServerError
-  def toResultJson(check: HealthCheck, result: HealthCheckResult) =
+  private def status(s: Boolean)     = if (s) "healthy" else "unhealthy"
+  private def statusCode(s: Boolean) = if (s) OK else InternalServerError
+  private def toResultJson(check: HealthCheck, result: HealthCheckResult) =
     HealthCheckResultJson(
       check.name,
       check.severity.toString,
