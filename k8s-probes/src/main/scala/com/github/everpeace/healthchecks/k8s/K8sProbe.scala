@@ -32,7 +32,7 @@ sealed abstract class K8sProbe protected (
     val ec: ExecutionContext) {
   require(checks.nonEmpty, "checks must not be empty.")
 
-  def toRoute = HealthCheckRoutes.health(checks, path)(ec)
+  def toRoute = HealthCheckRoutes.health(path, checks)(ec)
 }
 
 case class LivenessProbe protected (

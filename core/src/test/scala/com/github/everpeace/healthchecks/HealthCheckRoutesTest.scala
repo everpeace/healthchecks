@@ -43,13 +43,15 @@ class HealthRoutesTest
   describe("HealthCheck route") {
     it("should raise exception when no healthcheck is given.") {
       val exception = the[IllegalArgumentException] thrownBy HealthCheckRoutes
-        .health(List())
+        .health()
       exception.getMessage shouldEqual "requirement failed: checks must not empty."
     }
 
     it("should raise exception when given healthchecks have same names") {
-      val exception = the[IllegalArgumentException] thrownBy HealthCheckRoutes
-        .health(List(healthCheck("test")(healthy), healthCheck("test")(healthy)))
+      val exception = the[IllegalArgumentException] thrownBy HealthCheckRoutes.health(
+        healthCheck("test")(healthy),
+        healthCheck("test")(healthy)
+      )
       exception.getMessage shouldEqual "requirement failed: HealthCheck name should be unique (given HealthCheck names = [test,test])."
     }
 
@@ -57,7 +59,7 @@ class HealthRoutesTest
       val ok1 = healthCheck("test1")(healthy)
       val ok2 = healthCheck("test2")(healthy)
 
-      Get("/health") ~> HealthCheckRoutes.health(List(ok1, ok2)) ~> check {
+      Get("/health") ~> HealthCheckRoutes.health(ok1, ok2) ~> check {
         status shouldEqual OK
         responseAs[String] shouldEqual
           """
@@ -78,7 +80,7 @@ class HealthRoutesTest
       val failedButNonFatal =
         healthCheck("test2", Severity.NonFatal)(unhealthy("error"))
 
-      Get("/health") ~> HealthCheckRoutes.health(List(ok1, failedButNonFatal)) ~> check {
+      Get("/health") ~> HealthCheckRoutes.health(ok1, failedButNonFatal) ~> check {
         status shouldEqual OK
         responseAs[String] shouldEqual
           """
@@ -100,7 +102,7 @@ class HealthRoutesTest
         healthCheck("test2", Severity.NonFatal)(unhealthy("error"))
       val failedFatal = healthCheck("test3")(throw new Exception("exception"))
 
-      Get("/health") ~> HealthCheckRoutes.health(List(ok, failedButNonFatal, failedFatal)) ~> check {
+      Get("/health") ~> HealthCheckRoutes.health(ok, failedButNonFatal, failedFatal) ~> check {
         status shouldEqual InternalServerError
         responseAs[String] shouldEqual
           """
