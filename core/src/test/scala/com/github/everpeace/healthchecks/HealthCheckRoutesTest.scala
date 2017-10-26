@@ -61,6 +61,11 @@ class HealthRoutesTest
 
       Get("/health") ~> HealthCheckRoutes.health(ok1, ok2) ~> check {
         status shouldEqual OK
+        responseAs[String] shouldEqual "{}"
+      }
+
+      Get("/health?full=true") ~> HealthCheckRoutes.health(ok1, ok2) ~> check {
+        status shouldEqual OK
         responseAs[String] shouldEqual
           """
             |{
@@ -81,6 +86,11 @@ class HealthRoutesTest
         healthCheck("test2", Severity.NonFatal)(unhealthy("error"))
 
       Get("/health") ~> HealthCheckRoutes.health(ok1, failedButNonFatal) ~> check {
+        status shouldEqual OK
+        responseAs[String] shouldEqual "{}"
+      }
+
+      Get("/health?full=true") ~> HealthCheckRoutes.health(ok1, failedButNonFatal) ~> check {
         status shouldEqual OK
         responseAs[String] shouldEqual
           """
@@ -103,6 +113,11 @@ class HealthRoutesTest
       val failedFatal = healthCheck("test3")(throw new Exception("exception"))
 
       Get("/health") ~> HealthCheckRoutes.health(ok, failedButNonFatal, failedFatal) ~> check {
+        status shouldEqual InternalServerError
+        responseAs[String] shouldEqual "{}"
+      }
+
+      Get("/health?full=true") ~> HealthCheckRoutes.health(ok, failedButNonFatal, failedFatal) ~> check {
         status shouldEqual InternalServerError
         responseAs[String] shouldEqual
           """

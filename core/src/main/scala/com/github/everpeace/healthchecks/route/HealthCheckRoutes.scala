@@ -30,11 +30,12 @@ package com.github.everpeace.healthchecks.route
 
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.{PathMatchers, Route}
 import akka.http.scaladsl.server.directives.PathDirectives
+import akka.http.scaladsl.server.{PathMatchers, Route}
 import cats.data.Validated.{Invalid, Valid}
 import com.github.everpeace.healthchecks.{HealthCheck, HealthCheckResult}
 import de.heikoseeberger.akkahttpcirce.CirceSupport._
+import io.circe.JsonObject
 import io.circe.generic.JsonCodec
 import io.circe.generic.auto._
 
@@ -48,10 +49,13 @@ object HealthCheckRoutes extends DecorateAsScala {
       severity: String,
       status: String,
       messages: List[String])
+
   @JsonCodec case class ResponseJson(status: String, check_results: List[HealthCheckResultJson])
 
-  private def status(s: Boolean)     = if (s) "healthy" else "unhealthy"
+  private def status(s: Boolean) = if (s) "healthy" else "unhealthy"
+
   private def statusCode(s: Boolean) = if (s) OK else InternalServerError
+
   private def toResultJson(check: HealthCheck, result: HealthCheckResult) =
     HealthCheckResultJson(
       check.name,
@@ -83,21 +87,32 @@ object HealthCheckRoutes extends DecorateAsScala {
     val rootSlashRemoved =
       if (path.startsWith("/")) path.substring(1) else path
     PathDirectives.path(PathMatchers.separateOnSlashes(rootSlashRemoved)) {
-      get {
-        complete {
-          Future
-            .traverse(checks.toList) { c =>
-              c.run().map(c -> _)
+      parameter("full" ? false) { full =>
+        get {
+          def isHealthy(checkAndResults: List[(HealthCheck, HealthCheckResult)]) =
+            checkAndResults.forall(cr => cr._2.isValid || (!cr._1.severity.isFatal))
+          val checkAndResultsFuture = Future.traverse(checks.toList) { c =>
+            c.run().map(c -> _)
+          }
+          if (full) {
+            complete {
+              checkAndResultsFuture.map { checkAndResults =>
+                val healthy = isHealthy(checkAndResults)
+                statusCode(healthy) -> ResponseJson(
+                  status(healthy),
+                  checkAndResults.map {
+                    case (check, result) => toResultJson(check, result)
+                  }
+                )
+              }
             }
-            .map { checkAndResults =>
-              val healthy = checkAndResults.forall(cr => cr._2.isValid || (!cr._1.severity.isFatal))
-              statusCode(healthy) -> ResponseJson(
-                status(healthy),
-                checkAndResults.map {
-                  case (check, result) => toResultJson(check, result)
-                }
-              )
+          } else {
+            complete {
+              checkAndResultsFuture.map { checkAndResults =>
+                statusCode(isHealthy(checkAndResults)) -> JsonObject.empty
+              }
             }
+          }
         }
       }
     }
