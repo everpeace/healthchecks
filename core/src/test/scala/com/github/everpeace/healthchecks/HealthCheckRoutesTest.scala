@@ -113,12 +113,12 @@ class HealthRoutesTest
       val failedFatal = healthCheck("test3")(throw new Exception("exception"))
 
       Get("/health") ~> HealthCheckRoutes.health(ok, failedButNonFatal, failedFatal) ~> check {
-        status shouldEqual InternalServerError
+        status shouldEqual ServiceUnavailable
         responseAs[String] shouldEqual "{}"
       }
 
       Get("/health?full=true") ~> HealthCheckRoutes.health(ok, failedButNonFatal, failedFatal) ~> check {
-        status shouldEqual InternalServerError
+        status shouldEqual ServiceUnavailable
         responseAs[String] shouldEqual
           """
             |{
