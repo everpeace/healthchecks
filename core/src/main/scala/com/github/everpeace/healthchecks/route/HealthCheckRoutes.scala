@@ -54,7 +54,7 @@ object HealthCheckRoutes extends DecorateAsScala {
 
   private def status(s: Boolean) = if (s) "healthy" else "unhealthy"
 
-  private def statusCode(s: Boolean) = if (s) OK else InternalServerError
+  private def statusCode(s: Boolean) = if (s) OK else ServiceUnavailable
 
   private def toResultJson(check: HealthCheck, result: HealthCheckResult) =
     HealthCheckResultJson(
