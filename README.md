@@ -60,7 +60,9 @@ All you need to give is just health check function returning cats `ValidationNel
 
   val response = Http().singleRequest(HttpRequest(uri = "http://localhost:8888/health"))
 
-  // response body would be an json object similar to below.
+  // status code is 200(OK) if healthy, 500(Internal Server Error) if unhealthy.
+  // response body is empty by default for performance.
+  // pass '?full=true' query parameter to see full check result as json. it would be similar to below.
   // Please see com.github.everpeace.healthchecks.HealthRoutesTest for various response patterns.
   // {
   //   "status": "healthy",
