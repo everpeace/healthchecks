@@ -2,12 +2,12 @@ import sbt._
 
 object Version {
   val Scala = Seq("2.11.11", "2.12.4")
-  val circe = "0.6.1"
-  val akka = "2.4.19"
-  val akkaHttp = "10.0.9"
+  val circe = "0.7.1"
+  val akka = "2.5.6"
+  val akkaHttp = "10.0.10"
+  val akkaHttpCirce = "1.15.0"
   val cats = "0.8.1"
   val scalaTest = "3.0.3"
-  val akkaHttpCirce = "1.11.0"
   val paradise = "2.1.0"
 }
 
