@@ -106,14 +106,14 @@ Then you can set kubernetes liveness/readiness probe in the kubernetes manifest 
     httpGet:
       path: /live
       port: 8086
-      initialDelaySeconds: 3
-      periodSeconds: 3
+    initialDelaySeconds: 3
+    periodSeconds: 3
   readinessProbe:
     httpGet:
       path: /ready
       port: 8086
-      initialDelaySeconds: 3
-      periodSeconds: 3
+    initialDelaySeconds: 3
+    periodSeconds: 3
 ...
 ```
 
