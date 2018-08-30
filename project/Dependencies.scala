@@ -1,18 +1,22 @@
 import sbt._
 
 object Version {
-  val Scala = Seq("2.11.11", "2.12.4")
-  val circe = "0.7.1"
-  val akka = "2.5.6"
-  val akkaHttp = "10.0.10"
-  val akkaHttpCirce = "1.15.0"
-  val cats = "0.8.1"
-  val scalaTest = "3.0.3"
+  val Scala = Seq("2.11.12", "2.12.6")
+  val circe = "0.9.3"
+  val akka = "2.5.16"
+  val akkaHttp = "10.1.4"
+  val akkaHttpCirce = "1.21.0"
+  val cats = "1.2.0"
+  val scalaTest = "3.0.5"
   val paradise = "2.1.0"
 }
 
 object Dependencies {
-  val cats = "org.typelevel" %% "cats" % Version.cats
+  object cats {
+    val core = "org.typelevel" %% "cats-core" % Version.cats
+    val macros = "org.typelevel" %% "cats-macros" % Version.cats
+    val kernel = "org.typelevel" %% "cats-kernel" % Version.cats
+  }
 
   object akka {
     val http = "com.typesafe.akka" %% "akka-http" % Version.akkaHttp

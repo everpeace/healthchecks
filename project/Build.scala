@@ -40,7 +40,8 @@ object Build extends AutoPlugin {
       "-deprecation",
       "-language:_",
       "-encoding", "UTF-8",
-      "-Ywarn-unused-import"
+      "-Ywarn-unused-import",
+      "-Ypartial-unification"
     ),
 
     // Scalafmt setting
