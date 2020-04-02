@@ -1,6 +1,6 @@
 import bintray.BintrayPlugin
 import bintray.BintrayPlugin.autoImport._
-import com.lucidchart.sbt.scalafmt.ScalafmtCorePlugin.autoImport._
+import org.scalafmt.sbt.ScalafmtPlugin.autoImport._
 import de.heikoseeberger.sbtheader.HeaderPlugin
 import de.heikoseeberger.sbtheader.HeaderPlugin.autoImport._
 import sbtrelease.ReleasePlugin.autoImport._
@@ -39,23 +39,19 @@ object Build extends AutoPlugin {
       "-unchecked",
       "-deprecation",
       "-language:_",
-      "-encoding", "UTF-8",
+      "-encoding",
+      "UTF-8",
       "-Ywarn-unused-import"
     ),
-
     // Scalafmt setting
     scalafmtOnCompile := true,
-    scalafmtTestOnCompile := true,
-
     // macro compiler plugin
     addCompilerPlugin(
       "org.scalamacros" % "paradise" % Version.paradise cross CrossVersion.full
     ),
-
     // Bintray settings
     bintrayPackage := "healthchecks",
     bintrayRepository := "maven",
-
     releaseCrossBuild := true,
     releaseVersionBump := sbtrelease.Version.Bump.Next
   )

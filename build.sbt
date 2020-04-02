@@ -1,5 +1,4 @@
 lazy val root = project
-  .copy(id = "root")
   .in(file("."))
   .settings(
     publishLocal := {},
@@ -8,12 +7,10 @@ lazy val root = project
   .aggregate(core, k8sProbes)
 
 lazy val core = project
-  .copy(id = "core")
-  .enablePlugins(AutomateHeaderPlugin)
   .in(file("core"))
+  .enablePlugins(AutomateHeaderPlugin)
 
 lazy val k8sProbes = project
-  .copy(id = "k8s-probes")
   .in(file("k8s-probes"))
   .enablePlugins(AutomateHeaderPlugin)
   .dependsOn(core % "test->test;compile->compile")
