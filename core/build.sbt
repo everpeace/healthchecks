@@ -3,7 +3,9 @@ import Dependencies._
 name := "healthchecks-core"
 
 libraryDependencies ++= Seq(
-  cats,
+  cats.core,
+  cats.macros,
+  cats.kernel,
   akka.actor,
   akka.stream,
   akka.http,

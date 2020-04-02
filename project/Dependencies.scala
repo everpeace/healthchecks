@@ -12,7 +12,11 @@ object Version {
 }
 
 object Dependencies {
-  val cats = "org.typelevel" %% "cats-core" % Version.cats
+  object cats {
+    val core   = "org.typelevel" %% "cats-core"   % Version.cats
+    val macros = "org.typelevel" %% "cats-macros" % Version.cats
+    val kernel = "org.typelevel" %% "cats-kernel" % Version.cats
+  }
 
   object akka {
     val actor       = "com.typesafe.akka" %% "akka-actor"        % Version.akka
