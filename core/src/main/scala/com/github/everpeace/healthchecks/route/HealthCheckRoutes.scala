@@ -28,6 +28,7 @@
 
 package com.github.everpeace.healthchecks.route
 
+import akka.http.scaladsl.model.StatusCode
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.directives.PathDirectives
@@ -37,12 +38,10 @@ import com.github.everpeace.healthchecks.{HealthCheck, HealthCheckResult}
 import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.JsonObject
 import io.circe.generic.JsonCodec
-import io.circe.generic.auto._
 
-import scala.collection.convert.DecorateAsScala
 import scala.concurrent.{ExecutionContext, Future}
 
-object HealthCheckRoutes extends DecorateAsScala {
+object HealthCheckRoutes {
 
   @JsonCodec case class HealthCheckResultJson(
       name: String,
@@ -52,11 +51,11 @@ object HealthCheckRoutes extends DecorateAsScala {
 
   @JsonCodec case class ResponseJson(status: String, check_results: List[HealthCheckResultJson])
 
-  private def status(s: Boolean) = if (s) "healthy" else "unhealthy"
+  private def status(s: Boolean): String = if (s) "healthy" else "unhealthy"
 
-  private def statusCode(s: Boolean) = if (s) OK else ServiceUnavailable
+  private def statusCode(s: Boolean): StatusCode = if (s) OK else ServiceUnavailable
 
-  private def toResultJson(check: HealthCheck, result: HealthCheckResult) =
+  private def toResultJson(check: HealthCheck, result: HealthCheckResult): HealthCheckResultJson =
     HealthCheckResultJson(
       check.name,
       check.severity.toString,
@@ -91,9 +90,7 @@ object HealthCheckRoutes extends DecorateAsScala {
         get {
           def isHealthy(checkAndResults: List[(HealthCheck, HealthCheckResult)]) =
             checkAndResults.forall(cr => cr._2.isValid || (!cr._1.severity.isFatal))
-          val checkAndResultsFuture = Future.traverse(checks) { c =>
-            c.run().map(c -> _)
-          }
+          val checkAndResultsFuture = Future.traverse(checks) { c => c.run().map(c -> _) }
           if (full) {
             complete {
               checkAndResultsFuture.map { checkAndResults =>

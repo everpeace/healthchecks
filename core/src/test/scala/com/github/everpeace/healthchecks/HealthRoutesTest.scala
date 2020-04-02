@@ -32,10 +32,12 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.github.everpeace.healthchecks.HealthCheck.Severity
 import com.github.everpeace.healthchecks.route.HealthCheckRoutes
-import org.scalatest.{FunSpec, Matchers, OneInstancePerTest}
+import org.scalatest.funspec.AnyFunSpec
+import org.scalatest.OneInstancePerTest
+import org.scalatest.matchers.should.Matchers
 
 class HealthRoutesTest
-    extends FunSpec
+    extends AnyFunSpec
     with ScalatestRouteTest
     with Matchers
     with OneInstancePerTest {
@@ -80,7 +82,8 @@ class HealthRoutesTest
     }
 
     it(
-      "should return correct healthy response when some healthchecks are unhealthy but those are all NonFatal.") {
+      "should return correct healthy response when some healthchecks are unhealthy but those are all NonFatal."
+    ) {
       val ok1 = healthCheck("test1")(healthy)
       val failedButNonFatal =
         healthCheck("test2", Severity.NonFatal)(unhealthy("error"))
@@ -106,7 +109,8 @@ class HealthRoutesTest
     }
 
     it(
-      "should return correct response when some of 'Fatal' healthchecks are unhealthy system with a fatal error") {
+      "should return correct response when some of 'Fatal' healthchecks are unhealthy system with a fatal error"
+    ) {
       val ok = healthCheck("test1")(healthy)
       val failedButNonFatal =
         healthCheck("test2", Severity.NonFatal)(unhealthy("error"))
