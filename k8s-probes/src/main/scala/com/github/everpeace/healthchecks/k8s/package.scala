@@ -25,7 +25,6 @@ import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import akka.stream.ActorMaterializer
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -44,7 +43,7 @@ package object k8s {
     )(implicit
       system: ActorSystem,
       ec: ExecutionContext
-    ) = {
+    ): LivenessProbe = {
     LivenessProbe(checks.toList, config(system, "path").getString("liveness"), ec)
   }
 
@@ -53,7 +52,7 @@ package object k8s {
     )(implicit
       system: ActorSystem,
       ec: ExecutionContext
-    ) = {
+    ): ReadinessProbe = {
     ReadinessProbe(checks.toList, config(system, "path").getString("readiness"), ec)
   }
 
@@ -61,8 +60,7 @@ package object k8s {
       probe: K8sProbe,
       probes: K8sProbe*
     )(implicit
-      system: ActorSystem,
-      am: ActorMaterializer
+      system: ActorSystem
     ): Future[Http.ServerBinding] = {
     val host = config(system).getString("host")
     val port = config(system).getInt("port")

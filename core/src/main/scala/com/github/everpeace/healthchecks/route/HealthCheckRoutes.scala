@@ -35,15 +35,13 @@ import akka.http.scaladsl.server.directives.PathDirectives
 import akka.http.scaladsl.server.{PathMatchers, Route}
 import cats.data.Validated.{Invalid, Valid}
 import com.github.everpeace.healthchecks.{HealthCheck, HealthCheckResult}
-import de.heikoseeberger.akkahttpcirce.CirceSupport._
+import de.heikoseeberger.akkahttpcirce.FailFastCirceSupport._
 import io.circe.JsonObject
 import io.circe.generic.JsonCodec
-import io.circe.generic.auto._
 
-import scala.collection.convert.DecorateAsScala
 import scala.concurrent.{ExecutionContext, Future}
 
-object HealthCheckRoutes extends DecorateAsScala {
+object HealthCheckRoutes {
 
   @JsonCodec case class HealthCheckResultJson(
       name: String,
@@ -80,10 +78,10 @@ object HealthCheckRoutes extends DecorateAsScala {
     )(implicit
       ec: ExecutionContext
     ): Route = {
-    require(checks.toList.nonEmpty, "checks must not empty.")
+    require(checks.nonEmpty, "checks must not empty.")
     require(
-      checks.toList.map(_.name).toSet.size == checks.toList.length,
-      s"HealthCheck name should be unique (given HealthCheck names = [${checks.toList.map(_.name).mkString(",")}])."
+      checks.map(_.name).toSet.size == checks.length,
+      s"HealthCheck name should be unique (given HealthCheck names = [${checks.map(_.name).mkString(",")}])."
     )
     val rootSlashRemoved =
       if (path.startsWith("/")) path.substring(1) else path
@@ -92,7 +90,7 @@ object HealthCheckRoutes extends DecorateAsScala {
         get {
           def isHealthy(checkAndResults: List[(HealthCheck, HealthCheckResult)]) =
             checkAndResults.forall(cr => cr._2.isValid || (!cr._1.severity.isFatal))
-          val checkAndResultsFuture = Future.traverse(checks.toList) { c => c.run().map(c -> _) }
+          val checkAndResultsFuture = Future.traverse(checks) { c => c.run().map(c -> _) }
           if (full) {
             complete {
               checkAndResultsFuture.map { checkAndResults =>

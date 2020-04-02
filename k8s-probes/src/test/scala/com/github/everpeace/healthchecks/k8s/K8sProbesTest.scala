@@ -19,27 +19,25 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-package com.chatwork.healthcheck.k8s
+package com.github.everpeace.healthchecks.k8s
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{HttpRequest, StatusCodes}
-import akka.stream.ActorMaterializer
 import com.github.everpeace.healthchecks._
-import com.github.everpeace.healthchecks.k8s._
-import org.scalatest._
+import org.scalatest.freespec.AnyFreeSpec
+import org.scalatest.matchers.should.Matchers
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
 
-class K8sProbesTest extends FreeSpec with Matchers {
+class K8sProbesTest extends AnyFreeSpec with Matchers {
 
   private def fixture(probe: K8sProbe, probes: K8sProbe*) = new {}
 
   "K8sProbes" - {
     "should start successfully and return correct response" in {
       implicit val system = ActorSystem()
-      implicit val am     = ActorMaterializer()
       implicit val ec     = system.dispatcher
 
       val probeBinding = bindAndHandleProbes(
