@@ -1,0 +1,32 @@
+version: 2.1
+
+workflows:
+   build_and_test:
+     jobs:
+       - scala:
+           name: Scala 2.11.x
+           scala_version: 2.11.12
+       - scala:
+           name: Scala 2.12.x
+           scala_version: 2.12.6
+
+jobs:
+  scala:
+    docker:
+      - image: circleci/openjdk:8-jdk
+    environment:
+      TERM: "dumb"
+    parameters:
+      scala_version:
+        type: string
+    steps:
+      - checkout
+      - restore_cache:
+          key: scala-library-dependencies-{{ checksum "build.sbt" }}-{{ checksum "project/Build.scala" }}-{{ checksum "project/Dependencies.scala" }}
+      - run:
+          name: Format and test
+          command: |
+            sbt ++<<parameters.scala_version>> test
+      - save_cache:
+          paths: [ "~/.m2", "~/.ivy2", "~/.cache/coursier" ]
+          key: scala-library-dependencies-{{ checksum "build.sbt" }}-{{ checksum "project/Build.scala" }}-{{ checksum "project/Dependencies.scala" }}
